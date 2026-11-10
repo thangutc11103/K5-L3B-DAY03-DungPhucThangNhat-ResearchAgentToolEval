@@ -47,11 +47,15 @@ Sao chép mục dưới đây cho từng thành viên.
 
 ### Đóng góp cụ thể
 
--
+- Chạy preflight và baseline `v0` (`case_accuracy = 0.80`), phân tích 4 case FAIL gốc (`R03`, `R10`, `R12`, `R13`).
+- Tối ưu `starter_v0/artifacts/system_prompt.md` (`v1`, `v3`): bỏ các chỉ dẫn xấu của starter, thêm rule routing, quy tắc `clarify(response_type="yes_no")` trước khi `send` Telegram, và quy tắc giữ `query` ngắn gọn.
+- Tối ưu `starter_v0/artifacts/tools.yaml` (`v2`) và tích hợp khai báo tool mới `weather`, đảm bảo `pytest tests/test_tool_contract.py` xanh 100% (60/60 passed).
+- Hoàn thành 4 vòng đánh giá `v0` → `v1` → `v2` → `v3` nâng `case_accuracy` từ `0.80` lên `0.95` (`multiturn_accuracy = 1.00`) và ghi nhận đầy đủ vào `starter_v0/artifacts/version_log.csv`.
 
 ### Bằng chứng
 
--
+- File báo cáo cá nhân: `report/team/2A202603798_NguyenDucThang.md`
+- Files tối ưu & log: `starter_v0/artifacts/system_prompt.md`, `starter_v0/artifacts/tools.yaml`, `starter_v0/artifacts/version_log.csv`, `starter_v0/runs/v0_*.json`, `starter_v0/runs/v1_*.json`, `starter_v0/runs/v2_*.json`, `starter_v0/runs/v3_*.json`.
 
 ## ChuVanNhat-2A202603848
 
