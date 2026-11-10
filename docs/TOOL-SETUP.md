@@ -12,7 +12,7 @@ verify that your API key works — they are not routing hints. Run them from `st
 Recommended provider:
 
 ```bash
-OPENROUTER_API_KEY=<your-key>
+GROQ_API_KEY=<your-key>   # model: openai/gpt-oss-120b
 ```
 
 Alternatives:
@@ -27,7 +27,7 @@ Preflight:
 
 ```bash
 cd starter_v0
-python scripts/preflight_provider.py --provider openrouter
+python scripts/preflight_provider.py --provider groq
 ```
 
 Local model (bonus Small Local Model Challenge, không cần API key):
@@ -214,10 +214,10 @@ python -c "from tools import TOOL_FUNCTIONS as T; print(T['send']('AI20k test me
 
 Before class, at least one person per group should have:
 
-- `OPENROUTER_API_KEY`
+- `GROQ_API_KEY`
 - `TAVILY_API_KEY`
 - `FIRECRAWL_API_KEY`
 - `RAPIDAPI_KEY`
 - optional `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
 - optional `ARXIV_USER_AGENT`
-- `python scripts/preflight_provider.py --provider openrouter` passes
+- `python scripts/preflight_provider.py --provider groq` passes
