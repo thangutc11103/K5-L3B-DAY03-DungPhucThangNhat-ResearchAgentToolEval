@@ -4,7 +4,7 @@
 
 - Tên nhóm: DungPhucThangNhat
 - Lớp: L3B
-- Repo nhóm: `K5-L3A-DAY03-DungPhucThangNhat-ResearchAgentToolEval`
+- Repo nhóm: `K5-L3B-DAY03-DungPhucThangNhat-ResearchAgentToolEval`
 - URL repo, nhánh nộp, commit chốt: https://github.com/thangutc11103/K5-L3B-DAY03-DungPhucThangNhat-ResearchAgentToolEval.git
 
 ## Thành viên
