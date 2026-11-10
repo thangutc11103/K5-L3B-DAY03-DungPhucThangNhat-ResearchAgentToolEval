@@ -37,8 +37,13 @@ Ví dụ: "Research agent: tìm tin theo từ khóa / theo tài khoản, đọc 
 | Tên tool | Làm được gì | Tool mới nhóm thêm? |
 |---|---|---|
 | clarify | hỏi lại người dùng khi thiếu thông tin | không |
-|  |  |  |
-|  |  |  |
+| timeline | lấy các bài đăng gần đây của một tài khoản Twitter | không |
+| social_search | tìm bài đăng trên Twitter theo từ khóa | không |
+| lookup | tra cứu thông tin trên internet qua Tavily | không |
+| fetch | đọc nội dung bài viết từ một địa chỉ URL qua Firecrawl | không |
+| format | trình bày dữ liệu thành văn bản markdown digest | không |
+| send | gửi tin nhắn lên Telegram khi có xác nhận | không |
+| weather | tra cứu thời tiết hiện tại và dự báo theo tên thành phố | CÓ (Nhật thêm) |
 
 ### A3. Câu hỏi mẫu để thử
 
@@ -95,11 +100,11 @@ Lấy từ `starter_v0/transcripts/*.transcript.json`.
 
 | Item | Evidence File | What Worked | Risk / Guardrail |
 |---|---|---|---|
-| Tool mới (`tools/<tên>/`) |  |  |  |
-| Unit test tool mới (≥ 3 test/tool) | `pytest` output (0 failed) |  |  |
+| Tool mới (`tools/weather/`) | `starter_v0/tools/weather/tool.py`, `TOOL.md` | Tra cứu thời tiết hiện tại và dự báo qua Open-Meteo API (không cần API key), tự động map mã WMO sang tiếng Việt | Bọc toàn bộ trong try/except, trả về dict lỗi `{"tool": "weather", "error": ...}` không raise exception |
+| Unit test tool mới (≥ 3 test/tool) | `starter_v0/tests/test_tools_todo.py`, `pytest` output (0 failed) | 3 unit tests: Happy path (mock HTTP), Bad input (city rỗng, None), Failure path (mạng timeout, không tìm thấy thành phố) | Mock hoàn toàn bằng fixture `fake_http`, kiểm tra bắt đúng lỗi mà không để sập agent |
 | UI (lệnh chạy + link dùng thử) |  |  |  |
 
-Tool unit tests: số test đã viết, và một ví dụ lỗi mà unit test bắt được nhưng eval không bắt được.
+Tool unit tests: Đã viết 3 tests cho tool `weather`. Ví dụ lỗi mà unit test bắt được nhưng eval không bắt được: Khi model truyền `city=""` hoặc mạng bị timeout, nếu tool không bọc `try/except` thì sẽ `raise Exception` làm sập toàn bộ Agent; unit test bắt buộc tool phải trả về dictionary lỗi `{"tool": "weather", "error": "ValueError", ...}` giúp Agent tiếp tục hoạt động.
 
 ### B5. Bonus Evidence
 
