@@ -90,7 +90,7 @@ Sao chép mục dưới đây cho từng thành viên.
 **Phần 3 — Eval nhóm, chat live & phân tích lỗi**
 
 - File sở hữu: `data/eval_group.json`, `transcripts/*.transcript.json`, `analysis/*.csv`
-- Viết đúng 10 case (5 single turn + 5 multi turn) phủ các `failure_type`; ít nhất 1 case route tới tool mới của Phúc
+- Viết đúng 10 case (5 single turn + 5 multi turn) phủ các `failure_type`; ít nhất 1 case route tới tool mới của Nhật
 - Chạy `--suite group` trên `v3` (và `extension` nếu có thời gian)
 - Chat live ≥ 3 lượt bằng `chat.py`: research bình thường, thiếu thông tin rồi bổ sung, yêu cầu gửi Telegram
 - Dùng `scripts/parse_runs.py` để phân tích lỗi, cung cấp số liệu cho Phần B của báo cáo
@@ -99,11 +99,16 @@ Sao chép mục dưới đây cho từng thành viên.
 
 ### Đóng góp cụ thể
 
--
+- Viết 10 case trong `starter_v0/data/eval_group.json` (5 single + 5 multi turn, phủ đủ 6 `failure_type`, 2 case route tới tool `weather`)
+- Kiểm tra case offline bằng bộ chấm của `run_eval.py` (đáp án đúng PASS, đáp án sai FAIL)
+- Xuất `starter_v0/analysis/base_runs.csv` và phân tích 10 case FAIL của v0–v3 vào `starter_v0/analysis/failure_analysis.csv` (loại lỗi + nguyên nhân) cho bảng B2
+- Phát hiện artifact đã commit không khớp hash của run v3 trong `version_log.csv`
 
 ### Bằng chứng
 
--
+- Báo cáo cá nhân: `report/team/2A202603896_PhamQuangDung.md`
+- Commit `22eb354` (`feat(eval): add 10 group eval cases`)
+- `starter_v0/analysis/base_runs.csv`, `starter_v0/analysis/failure_analysis.csv`
 
 ## NguyenMinhPhuc-2A202603894
 
