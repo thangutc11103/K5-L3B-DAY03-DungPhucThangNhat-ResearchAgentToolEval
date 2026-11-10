@@ -53,7 +53,7 @@ Sao chép mục dưới đây cho từng thành viên.
 
 -
 
-## ChuVanNhat-2A202603848NguyenMinhPhuc-2A202603894
+## ChuVanNhat-2A202603848
 
 ### Phần việc phụ trách
 
