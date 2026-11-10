@@ -18,7 +18,7 @@
 
 - Không commit API key, password hoặc file `.env`.
 - Copy `starter_v0/.env.example` thành `starter_v0/.env` rồi điền giá trị. Các biến dùng trong bài:
-  - Provider (chọn một): `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`.
+  - Provider (chọn một; team dùng Groq `openai/gpt-oss-120b`): `GROQ_API_KEY`, `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`.
   - Tool: `TAVILY_API_KEY`, `FIRECRAWL_API_KEY`, `RAPIDAPI_KEY`, `RAPIDAPI_TWITTER_HOST`, `ARXIV_USER_AGENT`.
   - Bonus: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`.
 - Cách lấy từng key xem [docs/TOOL-SETUP.md](docs/TOOL-SETUP.md).

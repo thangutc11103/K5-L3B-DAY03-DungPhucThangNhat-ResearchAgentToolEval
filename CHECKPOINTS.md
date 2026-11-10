@@ -8,7 +8,7 @@ Bài làm nhóm. Giờ ghi cạnh mỗi checkpoint là mốc kiểm tra tại l�
 - **Cần làm:** Tạo repo nhóm, điền [TEAM.md](TEAM.md); cấu hình `starter_v0/.env` theo [docs/TOOL-SETUP.md](docs/TOOL-SETUP.md); chạy preflight và `pytest`; chạy base eval v0 **chưa sửa** `artifacts/system_prompt.md` và `artifacts/tools.yaml`; ghi dòng v0 vào `artifacts/version_log.csv`; gán loại lỗi cho từng case FAIL.
 - **Sản phẩm:** `runs/<run v0>.json`, dòng v0 trong `version_log.csv`, bảng B2 (Failure Analysis) trong `report/team/group_report.md`.
 - **Cần hiểu:** Khác nhau giữa `wrong_tool`, `wrong_arg_value`, `missing_info`, `wrong_boundary`; vì sao run có lỗi provider thì không dùng làm bằng chứng.
-- **Tự kiểm tra:** `python scripts/preflight_provider.py --provider openrouter` pass; `pytest` báo contract + example test xanh, TODO test đang skipped; trong run v0 có `provider_error_cases == 0` và `measured_cases == total_cases`.
+- **Tự kiểm tra:** `python scripts/preflight_provider.py --provider groq` pass; `pytest` báo contract + example test xanh, TODO test đang skipped; trong run v0 có `provider_error_cases == 0` và `measured_cases == total_cases`.
 
 ## CP2 — Tối ưu prompt và tool declaration v1–v3 (mốc 15:30 → 17:30)
 
@@ -32,7 +32,7 @@ Bài làm nhóm. Giờ ghi cạnh mỗi checkpoint là mốc kiểm tra tại l�
 - **Cần làm:** Viết đúng 10 case trong `data/eval_group.json` (5 single turn `query`, 5 multi turn `turns`), mỗi case có `failure_type`, `expect`, `metadata.what_it_tests`; ít nhất 1 case kiểm tra route tới tool mới; chạy `--suite group`.
 - **Sản phẩm:** `data/eval_group.json`, run group trong `runs/`, bảng B3 trong group report.
 - **Cần hiểu:** Cách viết `expect.tool_calls` chỉ chứa args cần kiểm tra; khi nào dùng `no_tool`.
-- **Tự kiểm tra:** `python run_eval.py --provider openrouter --version v3 --suite group --eval-cases data/eval_group.json` chạy không báo lỗi schema, đủ 10 case.
+- **Tự kiểm tra:** `python run_eval.py --provider groq --version v3 --suite group --eval-cases data/eval_group.json` chạy không báo lỗi schema, đủ 10 case.
 
 ## CP5 — UI, live chat và báo cáo (showdown 16:30 → hoàn thiện trước deadline)
 
