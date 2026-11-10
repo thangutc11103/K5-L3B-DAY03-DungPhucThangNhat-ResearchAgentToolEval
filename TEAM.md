@@ -68,11 +68,16 @@ Sao chép mục dưới đây cho từng thành viên.
 
 ### Đóng góp cụ thể
 
--
+- Tạo tool `starter_v0/tools/weather/tool.py` tra cứu thời tiết qua Open-Meteo API.
+- Tạo `starter_v0/tools/weather/TOOL.md` theo contract frontmatter.
+- Đăng ký tool trong `starter_v0/tools/__init__.py` và `starter_v0/artifacts/tools.yaml`.
+- Viết 3 unit tests trong `starter_v0/tests/test_tools_todo.py` (happy path, bad input, failure path).
+- Giữ toàn bộ test suite pytest xanh: 70 passed, 0 failed.
 
 ### Bằng chứng
 
--
+- File báo cáo cá nhân: `report/team/2A202603848_ChuVanNhat.md`
+- Output pytest: `pytest tests/test_tool_contract.py` (60 passed), `pytest tests/test_tools_todo.py -k weather` (3 passed).
 
 ## PhamQuangDung-2A202603896
 

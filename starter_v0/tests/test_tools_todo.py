@@ -11,6 +11,7 @@ Rules:
 from __future__ import annotations
 
 import pytest
+import requests
 
 from conftest import FakeResponse  # noqa: F401  (you will need it)
 from tools import TOOL_FUNCTIONS  # noqa: F401
@@ -110,13 +111,56 @@ def test_policy_instruction_like_lines_go_to_untrusted_text() -> None:
 #   2. bad / missing input from the model (empty string, wrong type, out-of-enum value)
 #   3. failure path (missing key, HTTP error, timeout) -> returns error dict, does not raise
 
-def test_my_new_tool_happy_path() -> None:
-    pytest.skip(TODO)
+def test_weather_happy_path(fake_http) -> None:
+    calls = fake_http(FakeResponse({
+        "results": [{"name": "Hanoi", "latitude": 21.0285, "longitude": 105.8542, "country": "Vietnam"}],
+        "current": {
+            "temperature_2m": 28.5,
+            "relative_humidity_2m": 65,
+            "weather_code": 0,
+            "wind_speed_10m": 12.0,
+        },
+    }))
+    result = TOOL_FUNCTIONS["weather"](city="Hanoi", days=1)
+
+    assert len(calls) == 2
+    assert "geocoding-api.open-meteo.com" in calls[0]["url"]
+    assert calls[0]["params"]["name"] == "Hanoi"
+    assert "api.open-meteo.com" in calls[1]["url"]
+    assert calls[1]["params"]["latitude"] == 21.0285
+    assert result["city"] == "Hanoi"
+    assert result["country"] == "Vietnam"
+    assert result["temperature_c"] == 28.5
+    assert result["humidity_pct"] == 65
+    assert result["condition"] == "Trời quang đãng (Clear sky)"
+    assert "Hanoi, Vietnam" in result["summary"]
 
 
-def test_my_new_tool_bad_input_from_model() -> None:
-    pytest.skip(TODO)
+def test_weather_bad_input_from_model() -> None:
+    # Model sends empty city
+    result_empty = TOOL_FUNCTIONS["weather"](city="")
+    assert result_empty["error"] == "ValueError"
+    assert "city" in result_empty["message"].lower()
+
+    # Model sends whitespace-only city
+    result_space = TOOL_FUNCTIONS["weather"](city="   ")
+    assert result_space["error"] == "ValueError"
+
+    # Model sends None city
+    result_none = TOOL_FUNCTIONS["weather"](city=None)
+    assert result_none["error"] == "ValueError"
 
 
-def test_my_new_tool_failure_returns_error_dict() -> None:
-    pytest.skip(TODO)
+def test_weather_failure_returns_error_dict(fake_http) -> None:
+    # HTTP/Connection error must return an error dict, not raise
+    fake_http(requests.RequestException("Open-Meteo connection timed out"))
+    result = TOOL_FUNCTIONS["weather"](city="Tokyo")
+    assert result["tool"] == "weather"
+    assert result["error"] == "RequestException"
+    assert "timed out" in result["message"]
+
+    # City not found returns not_found status dict, not crash
+    fake_http(FakeResponse({"results": []}))
+    result_not_found = TOOL_FUNCTIONS["weather"](city="NonExistentCity12345")
+    assert result_not_found["status"] == "not_found"
+    assert "Không tìm thấy" in result_not_found["message"]
