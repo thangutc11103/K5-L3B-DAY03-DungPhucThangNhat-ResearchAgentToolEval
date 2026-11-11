@@ -1,0 +1,595 @@
+{
+  "run_id": "v4_B_group_groq_20261111T080451202418",
+  "version": "v4",
+  "artifact_version": "v4+p413725f7051c+tfee9d0e2bf87",
+  "prompt_hash": "413725f7051c898950a13acb63f86c4351a07449fb5155e43bed7e5c98bde85e",
+  "tools_hash": "fee9d0e2bf8735e4f0b9433ce173866ac76cdae4e30e23dcc58ccb1080cd84a3",
+  "phase": "B",
+  "suite": "group",
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "system_prompt": "F:\\App\\hoc\\workspace\\VinAI\\K5-L3B-DAY03-DungPhucThangNhat-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "F:\\App\\hoc\\workspace\\VinAI\\K5-L3B-DAY03-DungPhucThangNhat-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day03_v2_research_group",
+  "dataset_role": "group",
+  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
+  "generated_at": "2026-11-11T08:04:51",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 9,
+    "case_accuracy": 0.9,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 0.9,
+    "multiturn_accuracy": 0.8,
+    "failure_counts": {
+      "wrong_arg_value": 1
+    },
+    "observed_mismatch_counts": {
+      "wrong_arg_value": 1
+    }
+  },
+  "results": [
+    {
+      "id": "G01_weather_forecast_routing",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_new_tool_weather",
+        "difficulty": "easy",
+        "what_it_tests": "Route tới tool mới weather (không phải lookup) và trích days=3 từ '3 ngày tới'."
+      },
+      "input": "Dự báo thời tiết London 3 ngày tới thế nào?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "weather",
+            "args": {
+              "city": "London",
+              "days": 3
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "weather",
+            "args": {
+              "city": "London",
+              "days": 3
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "weather",
+          "args": {
+            "city": "London",
+            "days": 3
+          },
+          "result": {
+            "tool": "weather",
+            "city": "London",
+            "country": "United Kingdom",
+            "days": 3,
+            "temperature_c": 9.0,
+            "humidity_pct": 94,
+            "wind_speed_kmh": 13.3,
+            "weather_code": 53,
+            "condition": "Mưa phùn vừa (Moderate drizzle)",
+            "summary": "Thời tiết tại London, United Kingdom: Mưa phùn vừa (Moderate drizzle), nhiệt độ 9.0°C, độ ẩm 94%, gió 13.3 km/h."
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_weather_missing_city",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_missing_city",
+        "difficulty": "medium",
+        "what_it_tests": "Hỏi thời tiết nhưng không nói thành phố → clarify(text) hỏi địa điểm, KHÔNG đoán bừa city (vd Hanoi) để gọi weather."
+      },
+      "input": "Mai trời có mưa không nhỉ?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn muốn xem thời tiết ở thành phố nào?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn muốn xem thời tiết ở thành phố nào?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn muốn xem thời tiết ở thành phố nào?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_handle_with_at_sign",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "arg_strip_at_handle",
+        "difficulty": "easy",
+        "what_it_tests": "User gõ handle có '@' → screenname phải bỏ '@' (karpathy), giữ đúng limit=4."
+      },
+      "input": "Lấy 4 tweet mới nhất của @karpathy",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "limit": 4,
+              "screenname": "karpathy"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "limit": 4,
+            "screenname": "karpathy"
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "error": "HTTPError",
+            "message": "403 Client Error: Forbidden for url: https://twitter-api45.p.rapidapi.com/timeline.php?screenname=karpathy"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_out_of_scope_booking",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "out_of_scope_action",
+        "difficulty": "medium",
+        "what_it_tests": "Yêu cầu hành động agent không hỗ trợ (đặt vé) nhưng có từ khoá gần tool (Tokyo, sáng mai) → KHÔNG gọi weather/lookup, từ chối và nói rõ giới hạn."
+      },
+      "input": "Đặt giúp mình vé máy bay đi Tokyo sáng mai nhé",
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Xin lỗi, mình không thể thực hiện việc đặt vé máy bay trực tiếp cho bạn được. Tuy nhiên mình có thể giúp bạn:\n\n1. **Tìm các hãng hàng không** có chuyến bay từ Việt Nam (Hà Nội, Đà Nẵng, TP.HCM) tới Tokyo vào sáng mai.  \n2. **So sánh giá** và thời gian bay trên các trang web đặt vé như Vietnam Airlines, Japan Airlines, ANA, hoặc các nền tảng trung gian như Skyscanner, Google Flights, Kayak.  \n3. **Cung cấp hướng dẫn** các bước cần chuẩn bị (hộ chiếu, visa, hành lý, quy định COVID‑19, …) và các lưu ý khi đặt vé trực tuyến.\n\nBạn muốn mình tìm thông tin về các chuyến bay cụ thể, giá vé, hoặc hướng dẫn đặt vé trên một trang web nào đó không? Hãy cho mình biết chi tiết (điểm khởi hành, thời gian mong muốn, ngân sách…) để mình hỗ trợ tốt hơn.",
+        "case_failure_type": "out_of_scope",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G05_papers_sort_and_limit",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "arg_papers_sort_by",
+        "difficulty": "medium",
+        "what_it_tests": "'mới nộp gần đây nhất' → sort_by=submittedDate (không phải relevance mặc định), '3 paper' → max_results=3."
+      },
+      "input": "Tìm 3 paper arXiv mới nộp gần đây nhất về diffusion models",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "papers",
+            "args": {
+              "max_results": 3,
+              "sort_by": "submittedDate"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "papers",
+            "args": {
+              "max_results": 3,
+              "query": "diffusion models",
+              "sort_by": "submittedDate"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "papers",
+          "args": {
+            "max_results": 3,
+            "query": "diffusion models",
+            "sort_by": "submittedDate"
+          },
+          "result": {
+            "tool": "arxiv_search",
+            "error": "ReadTimeout",
+            "message": "HTTPSConnectionPool(host='export.arxiv.org', port=443): Read timed out. (read timeout=30)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_send_after_confirmation",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "send_after_confirm",
+        "difficulty": "medium",
+        "what_it_tests": "2 turns: user đã xác nhận rõ ở lượt sau → gọi send(confirmed=true), KHÔNG hỏi xác nhận lần nữa. Bổ sung cho R12 (chỉ test nhánh chưa xác nhận)."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Đăng lên Telegram bản tin này: 'AI Daily 10/11: OpenAI và Anthropic cùng công bố model mới.'"
+        },
+        {
+          "role": "user",
+          "content": "Có, mình xác nhận, đăng đúng nội dung đó lên Telegram đi."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "confirmed": true,
+              "text": "AI Daily 10/11: OpenAI và Anthropic cùng công bố model mới."
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "send",
+          "args": {
+            "confirmed": true,
+            "text": "AI Daily 10/11: OpenAI và Anthropic cùng công bố model mới."
+          },
+          "result": {
+            "tool": "send_telegram",
+            "error": "RuntimeError",
+            "message": "Missing TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_send_cancelled",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "send_cancelled",
+        "difficulty": "medium",
+        "what_it_tests": "2 turns: user rút lại yêu cầu gửi → KHÔNG gọi send (và không gọi tool nào), chỉ xác nhận đã huỷ."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Đăng bản tin AI hôm nay lên Telegram giúp mình"
+        },
+        {
+          "role": "user",
+          "content": "Khoan, đừng đăng nữa, mình chưa duyệt nội dung."
+        }
+      ],
+      "expect": {
+        "no_tool": true,
+        "behavior": "answer_without_tool"
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Đã hiểu, mình sẽ không đăng bản tin lên Telegram. Nếu bạn muốn xem lại hoặc chỉnh sửa nội dung trước khi đăng, cứ cho mình biết nhé!",
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G08_weather_carryover_city",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_weather_carryover",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: lượt cuối không nói thành phố → carry city=Tokyo từ lượt 2 (không quay về Hà Nội), days=5."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Thời tiết Hà Nội hôm nay thế nào?"
+        },
+        {
+          "role": "user",
+          "content": "Còn Tokyo thì sao?"
+        },
+        {
+          "role": "user",
+          "content": "Cho mình dự báo 5 ngày luôn nhé"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "weather",
+            "args": {
+              "city": "Tokyo",
+              "days": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": true,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "weather",
+            "args": {
+              "city": "Hanoi",
+              "days": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "wrong_arg_value",
+        "failure_type": "wrong_arg_value",
+        "failures": [
+          "city: expected 'Tokyo', got 'Hanoi'"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "weather",
+          "args": {
+            "city": "Hanoi",
+            "days": 5
+          },
+          "result": {
+            "tool": "weather",
+            "city": "Hanoi",
+            "country": "Vietnam",
+            "days": 5,
+            "temperature_c": 18.0,
+            "humidity_pct": 74,
+            "wind_speed_kmh": 5.6,
+            "weather_code": 1,
+            "condition": "Chủ yếu quang đãng (Mainly clear)",
+            "summary": "Thời tiết tại Hanoi, Vietnam: Chủ yếu quang đãng (Mainly clear), nhiệt độ 18.0°C, độ ẩm 74%, gió 5.6 km/h."
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_switch_web_to_twitter_top",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_switch_web_to_twitter",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: chiều ngược của M06 — bỏ lookup chuyển sang social_search, carry chủ đề Anthropic, 'nổi bật nhất' → search_type=Top."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tin tức về Anthropic tuần này trên web có gì?"
+        },
+        {
+          "role": "user",
+          "content": "Thôi bỏ web, xem mọi người bàn gì trên Twitter"
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy các tweet nổi bật nhất thôi"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "Anthropic",
+              "search_type": "Top"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "limit": 5,
+              "query": "Anthropic",
+              "search_type": "Top"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "limit": 5,
+            "query": "Anthropic",
+            "search_type": "Top"
+          },
+          "result": {
+            "tool": "search_tweets",
+            "error": "HTTPError",
+            "message": "403 Client Error: Forbidden for url: https://twitter-api45.p.rapidapi.com/search.php?query=Anthropic&search_type=Top"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_no_tool_after_done",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_no_tool_closing",
+        "difficulty": "medium",
+        "what_it_tests": "2 turns: lượt cuối chỉ là lời cảm ơn/kết thúc → KHÔNG gọi lại timeline cho lượt trước."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Lấy 3 tweet mới nhất của Sam Altman"
+        },
+        {
+          "role": "user",
+          "content": "Ok cảm ơn, vậy là đủ rồi, không cần tìm thêm gì nữa."
+        }
+      ],
+      "expect": {
+        "no_tool": true,
+        "behavior": "answer_without_tool"
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Bạn vui lòng cho biết nếu còn bất kỳ yêu cầu nào khác nhé! Chúc bạn một ngày tốt lành.",
+        "case_failure_type": "unnecessary_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    }
+  ]
+}
