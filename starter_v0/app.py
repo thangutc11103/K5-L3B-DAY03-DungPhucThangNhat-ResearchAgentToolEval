@@ -1,4 +1,4 @@
-"""Streamlit UI for the Research Agent.
+"""Streamlit UI for the Research Agent (ChatGPT-style layout).
 
 Run:  cd starter_v0 && streamlit run app.py
 Reuses the multi-turn tool loop from chat.py (tools executed, results fed back,
@@ -6,6 +6,7 @@ clarify pauses for the user). Tool errors are always rendered, never hidden.
 """
 from __future__ import annotations
 
+import html
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -31,15 +32,77 @@ PROVIDERS = PROVIDER_CHOICES  # "groq" first = default
 SYSTEM_PROMPT_PATH = ARTIFACTS_DIR / "system_prompt.md"
 TOOLS_PATH = ARTIFACTS_DIR / "tools.yaml"
 TRANSCRIPTS_DIR = ROOT / "transcripts"
+DEFAULT_VERSION = "v4"
 
-STATUS_LABELS = {
-    "answered": "✅ answered",
-    "waiting_for_user": "❓ waiting for your reply",
-    "max_tool_rounds": "⚠️ stopped: max tool rounds",
-    "provider_error": "❌ provider error",
+# Shown only when a turn did not end normally; "answered" needs no label.
+STATUS_NOTES = {
+    "waiting_for_user": "Đang chờ bạn trả lời",
+    "max_tool_rounds": "Đã dừng: vượt quá số vòng gọi tool",
 }
 
-st.set_page_config(page_title="Research Agent", page_icon="🔎", layout="wide")
+SUGGESTIONS = [
+    "Tin tức AI hôm nay có gì nổi bật?",
+    "Tóm tắt 3 tweet mới nhất của Andrej Karpathy",
+    "Dự báo thời tiết Đà Nẵng 3 ngày tới?",
+    "Tìm 3 paper arXiv mới nhất về diffusion models",
+]
+
+CSS = """
+<style>
+.block-container { max-width: 48rem; padding-top: 2.5rem; padding-bottom: 7rem; }
+header[data-testid="stHeader"] { background: transparent; }
+
+.user-row { display: flex; justify-content: flex-end; margin: 1.25rem 0 0.75rem; }
+.user-bubble {
+    background: var(--secondary-background-color);
+    padding: 0.6rem 1.1rem;
+    border-radius: 1.4rem;
+    max-width: 75%;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.55;
+}
+
+.tool-error {
+    color: #f87171;
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0.5rem;
+}
+.status-note {
+    color: rgba(236, 236, 236, 0.5);
+    font-size: 0.8rem;
+    margin-top: -0.25rem;
+}
+
+div[data-testid="stExpander"] details {
+    border: none;
+    background: transparent;
+}
+div[data-testid="stExpander"] summary {
+    padding: 0.15rem 0;
+    font-size: 0.85rem;
+    opacity: 0.6;
+}
+div[data-testid="stExpander"] summary:hover { opacity: 1; }
+
+.empty-title {
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 18vh 0 2rem;
+}
+div[data-testid="stButton"] button {
+    border-radius: 0.9rem;
+    text-align: left;
+    justify-content: flex-start;
+}
+div[data-testid="stChatInput"] textarea { font-size: 1rem; }
+section[data-testid="stSidebar"] .stCaption code { font-size: 0.72rem; }
+</style>
+"""
+
+st.set_page_config(page_title="Research Agent", layout="centered")
+st.markdown(CSS, unsafe_allow_html=True)
 
 
 @st.cache_resource(show_spinner=False)
@@ -88,40 +151,55 @@ def new_transcript(provider: str, model: str | None, version: str, history_windo
     st.session_state.config_key = (provider, model, version, history_window, max_rounds)
 
 
-def render_turn(turn: dict[str, Any]) -> None:
-    with st.chat_message("user"):
-        st.markdown(turn["user"])
-    with st.chat_message("assistant"):
-        for round_record in turn.get("rounds", []):
-            for event in round_record.get("tool_results", []):
-                name = event.get("tool", "?")
-                args = event.get("args", {})
-                result = event.get("result")
-                error = tool_error(result)
-                if error:
-                    # Shown outside the expander so tool errors are never hidden.
-                    st.error(f"Tool `{name}` failed: {error}")
-                with st.expander(f"🔧 {name}({json_text(args, max_chars=120)})", expanded=bool(error)):
-                    st.markdown("**Args**")
-                    st.code(json_text(args), language="json")
-                    st.markdown("**Result**")
-                    st.code(json_text(result, max_chars=20000), language="json")
-        if turn.get("status") == "provider_error":
-            st.error(f"Provider error: {turn.get('error')}")
-        else:
-            st.markdown(turn.get("assistant_text") or "_(empty response)_")
-        st.caption(STATUS_LABELS.get(turn.get("status", ""), turn.get("status", "")))
+def render_user(text: str) -> None:
+    # User text is escaped: the app may be exposed through a public tunnel.
+    st.markdown(
+        f'<div class="user-row"><div class="user-bubble">{html.escape(text)}</div></div>',
+        unsafe_allow_html=True,
+    )
+
+
+def render_error(text: str) -> None:
+    st.markdown(f'<div class="tool-error">{html.escape(text)}</div>', unsafe_allow_html=True)
+
+
+def render_assistant(turn: dict[str, Any]) -> None:
+    for round_record in turn.get("rounds", []):
+        for event in round_record.get("tool_results", []):
+            name = event.get("tool", "?")
+            args = event.get("args", {})
+            result = event.get("result")
+            error = tool_error(result)
+            if error:
+                # Rendered outside the expander so tool errors are never hidden.
+                render_error(f"Lỗi khi dùng {name}: {error}")
+            with st.expander(f"Đã dùng {name}", expanded=False):
+                st.caption("Tham số")
+                st.code(json_text(args), language="json")
+                st.caption("Kết quả")
+                st.code(json_text(result, max_chars=20000), language="json")
+    if turn.get("status") == "provider_error":
+        render_error(f"Lỗi provider: {turn.get('error')}")
+    else:
+        st.markdown(turn.get("assistant_text") or "_(không có phản hồi)_")
+    note = STATUS_NOTES.get(turn.get("status", ""))
+    if note:
+        st.markdown(f'<div class="status-note">{note}</div>', unsafe_allow_html=True)
+
+
+def queue_prompt(text: str) -> None:
+    st.session_state.pending_prompt = text
 
 
 # ---------------- Sidebar ----------------
 with st.sidebar:
-    st.header("⚙️ Settings")
-    provider_name = st.selectbox("Provider", PROVIDERS, index=0)
-    model_input = st.text_input("Model (blank = provider default)", value="").strip() or None
-    version_label = st.text_input("Artifact version", value="v3").strip() or "v3"
-    history_window = st.number_input("History window (turn pairs)", min_value=0, max_value=20, value=5)
-    max_tool_rounds = st.number_input("Max tool rounds", min_value=1, max_value=10, value=4)
-    new_chat = st.button("🆕 New chat", use_container_width=True)
+    new_chat = st.button("Cuộc trò chuyện mới", use_container_width=True)
+    with st.expander("Cài đặt", expanded=False):
+        provider_name = st.selectbox("Provider", PROVIDERS, index=0)
+        model_input = st.text_input("Model (để trống = mặc định)", value="").strip() or None
+        version_label = st.text_input("Artifact version", value=DEFAULT_VERSION).strip() or DEFAULT_VERSION
+        history_window = st.number_input("Số lượt nhớ (cặp hỏi–đáp)", min_value=0, max_value=20, value=5)
+        max_tool_rounds = st.number_input("Số vòng gọi tool tối đa", min_value=1, max_value=10, value=4)
 
 config_key = (provider_name, model_input, version_label, int(history_window), int(max_tool_rounds))
 if new_chat or "transcript" not in st.session_state or st.session_state.get("config_key") != config_key:
@@ -139,24 +217,39 @@ st.session_state.transcript["model"] = selected_model
 
 with st.sidebar:
     st.caption(f"Model: `{selected_model}`")
-    st.caption(f"artifact_version: `{st.session_state.transcript.get('artifact_version')}`")
+    st.caption(f"Version: `{st.session_state.transcript.get('artifact_version')}`")
     st.caption(f"Transcript: `{st.session_state.transcript_path.relative_to(ROOT)}`")
 
 # ---------------- Main ----------------
-st.title("🔎 Research Agent")
-st.caption("Ask for research on accounts, keywords or URLs. Tool calls and their results (including errors) are shown below each answer.")
-
 if provider_error:
-    st.error(
-        f"Cannot start provider `{provider_name}`: {provider_error}\n\n"
-        "Check `starter_v0/.env` (copy from `.env.example`) and that the provider SDK is installed."
+    render_error(
+        f"Không khởi tạo được provider {provider_name}: {provider_error}. "
+        "Kiểm tra starter_v0/.env (copy từ .env.example) và SDK của provider."
     )
 
-for past_turn in st.session_state.display:
-    render_turn(past_turn)
+user_text = st.chat_input("Hỏi bất kỳ điều gì", disabled=provider is None)
+if not user_text and st.session_state.get("pending_prompt"):
+    user_text = st.session_state.pop("pending_prompt")
 
-user_text = st.chat_input("Type your request…", disabled=provider is None)
+if not st.session_state.display and not user_text:
+    st.markdown('<div class="empty-title">Tôi có thể giúp gì cho bạn?</div>', unsafe_allow_html=True)
+    columns = st.columns(2)
+    for index, suggestion in enumerate(SUGGESTIONS):
+        columns[index % 2].button(
+            suggestion,
+            key=f"suggestion_{index}",
+            use_container_width=True,
+            disabled=provider is None,
+            on_click=queue_prompt,
+            args=(suggestion,),
+        )
+
+for past_turn in st.session_state.display:
+    render_user(past_turn["user"])
+    render_assistant(past_turn)
+
 if user_text and provider is not None:
+    render_user(user_text)
     system_prompt = SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
     tools = get_openai_tools(str(TOOLS_PATH), TOOLS_PATH.stat().st_mtime)
     messages = [
@@ -173,7 +266,7 @@ if user_text and provider is not None:
         "rounds": [],
         "tool_events": [],
     }
-    with st.spinner("Agent is working…"):
+    with st.spinner("Đang suy nghĩ…"):
         try:
             result = run_model_tool_loop(
                 provider=provider,
@@ -194,5 +287,5 @@ if user_text and provider is not None:
     try:
         write_transcript(st.session_state.transcript_path, st.session_state.transcript)
     except OSError as exc:
-        st.warning(f"Could not save transcript: {exc}")
-    render_turn(turn)
+        render_error(f"Không lưu được transcript: {exc}")
+    render_assistant(turn)
