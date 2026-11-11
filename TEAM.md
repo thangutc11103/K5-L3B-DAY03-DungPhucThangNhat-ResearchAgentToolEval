@@ -5,7 +5,9 @@
 - Tên nhóm: DungPhucThangNhat
 - Lớp: L3B
 - Repo nhóm: `K5-L3B-DAY03-DungPhucThangNhat-ResearchAgentToolEval`
-- URL repo, nhánh nộp, commit chốt: https://github.com/thangutc11103/K5-L3B-DAY03-DungPhucThangNhat-ResearchAgentToolEval.git
+- URL repo: https://github.com/thangutc11103/K5-L3B-DAY03-DungPhucThangNhat-ResearchAgentToolEval.git
+- Nhánh nộp: `main`
+- Commit chốt: `7f22bb4` (hoặc commit mới nhất trên `main`)
 
 ## Thành viên
 
@@ -76,13 +78,13 @@ Sao chép mục dưới đây cho từng thành viên.
 - Tạo tool `starter_v0/tools/weather/tool.py` tra cứu thời tiết qua Open-Meteo API.
 - Tạo `starter_v0/tools/weather/TOOL.md` theo contract frontmatter.
 - Đăng ký tool trong `starter_v0/tools/__init__.py` và `starter_v0/artifacts/tools.yaml`.
-- Viết 3 unit tests trong `starter_v0/tests/test_tools_todo.py` (happy path, bad input, failure path).
-- Giữ toàn bộ test suite pytest xanh: 70 passed, 0 failed.
+- Viết 4 unit tests trong `starter_v0/tests/test_tools_todo.py` (happy path, regression test dự báo nhiều ngày, bad input, failure path).
+- Giữ toàn bộ test suite pytest xanh: 71 passed, 0 failed.
 
 ### Bằng chứng
 
 - File báo cáo cá nhân: `report/team/2A202603848_ChuVanNhat.md`
-- Output pytest: `pytest tests/test_tool_contract.py` (60 passed), `pytest tests/test_tools_todo.py -k weather` (3 passed).
+- Output pytest: `pytest tests/test_tool_contract.py` (60 passed), `pytest tests/test_tools_todo.py -k weather` (4 passed), toàn bộ pytest: 71 passed, 0 failed.
 
 ## PhamQuangDung-2A202603896
 

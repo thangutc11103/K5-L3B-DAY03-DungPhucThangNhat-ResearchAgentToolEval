@@ -4,7 +4,7 @@
 
 - Họ tên: Chu Văn Nhật
 - MSSV: 2A202603848
-- Email: nhat.cv.2026@vinuni.edu.vn (hoặc email trường của bạn)
+- Email: 26ai.nhatcv@vinuni.edu.vn
 - Lớp: L3B
 
 ## 2. Phần việc phụ trách
