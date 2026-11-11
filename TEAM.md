@@ -59,6 +59,7 @@ Sao chép mục dưới đây cho từng thành viên.
 
 - File báo cáo cá nhân: `report/team/2A202603798_NguyenDucThang.md`
 - Files tối ưu & log: `starter_v0/artifacts/system_prompt.md`, `starter_v0/artifacts/tools.yaml`, `starter_v0/artifacts/version_log.csv`, `starter_v0/runs/v0_*.json`, `starter_v0/runs/v1_*.json`, `starter_v0/runs/v2_*.json`, `starter_v0/runs/v3_*.json`.
+- Bonus gửi Telegram thật (`status: sent`): `starter_v0/transcripts/v4_groq_20261111T112623429223.transcript.json`.
 
 ## ChuVanNhat-2A202603848
 

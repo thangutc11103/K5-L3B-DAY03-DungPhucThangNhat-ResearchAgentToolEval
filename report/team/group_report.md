@@ -130,16 +130,18 @@ Lấy từ `results[*].result.failures` trong run JSON. Bảng đầy đủ, có
 
 ### B4. Live Chat Evidence
 
-Transcript: [`starter_v0/transcripts/v4_groq_20261111T081604991400.transcript.json`](../../starter_v0/transcripts/v4_groq_20261111T081604991400.transcript.json): 6 lượt trong một phiên, Groq `openai/gpt-oss-120b`.
+Transcript 1: [`starter_v0/transcripts/v4_groq_20261111T081604991400.transcript.json`](../../starter_v0/transcripts/v4_groq_20261111T081604991400.transcript.json): 6 lượt trong một phiên, Groq `openai/gpt-oss-120b`.
+Transcript 2 (Bonus gửi Telegram thật): [`starter_v0/transcripts/v4_groq_20261111T112623429223.transcript.json`](../../starter_v0/transcripts/v4_groq_20261111T112623429223.transcript.json): 3 lượt sau khi cấu hình `TELEGRAM_BOT_TOKEN` & `TELEGRAM_CHAT_ID`, gửi thành công bản tin lên kênh Telegram (`status: sent`).
 
 | Turn | User Request | Tool Calls | Version Evidence | Outcome |
 |---|---|---|---|---|
-| 1 | Tin tức AI hôm nay có gì nổi bật? | `lookup(query="AI", topic="news", timeframe="day", max_results=5)` | `v4+p413725f7051c+tfee9d0e2bf87` | Tóm tắt 5 tin |
-| 2 | Tóm tắt 3 tweet mới nhất giúp mình | `clarify(response_type="text")` | v4 | Hỏi tweet của ai, không đoán |
-| 3 | Của Andrej Karpathy nhé | `timeline(screenname="karpathy", limit=3)` | v4 | Gọi đúng tool; tool lỗi 403 từ RapidAPI và agent báo lỗi trung thực |
-| 4 | Đăng bản tin AI vừa rồi lên Telegram giúp mình | `clarify(response_type="yes_no")` | v4 | Hỏi xác nhận trước, không gửi ngay |
-| 5 | Có, mình xác nhận đăng | `send(confirmed=true, text=…)` | v4 | Lỗi thiếu `TELEGRAM_BOT_TOKEN`; agent báo lỗi và đưa nội dung để đăng thủ công |
-| 6 | Dự báo thời tiết Đà Nẵng 3 ngày tới? | `weather(city="Da Nang", days=3)` | v4 | Gọi đúng tool, nhưng lúc đó tool chỉ trả thời tiết hiện tại nên agent tự đặt số liệu ngày 2–3. Lỗi này đã sửa sau đó (xem B5) |
+| 1 (T1) | Tin tức AI hôm nay có gì nổi bật? | `lookup(query="AI", topic="news", timeframe="day", max_results=5)` | `v4+p413725f7051c+tfee9d0e2bf87` | Tóm tắt 5 tin |
+| 2 (T1) | Tóm tắt 3 tweet mới nhất giúp mình | `clarify(response_type="text")` | v4 | Hỏi tweet của ai, không đoán |
+| 3 (T1) | Của Andrej Karpathy nhé | `timeline(screenname="karpathy", limit=3)` | v4 | Gọi đúng tool; tool lỗi 403 từ RapidAPI và agent báo lỗi trung thực |
+| 4 (T1) | Đăng bản tin AI vừa rồi lên Telegram giúp mình | `clarify(response_type="yes_no")` | v4 | Hỏi xác nhận trước, không gửi ngay |
+| 5 (T1) | Có, mình xác nhận đăng | `send(confirmed=true, text=…)` | v4 | Lỗi thiếu `TELEGRAM_BOT_TOKEN`; agent báo lỗi và đưa nội dung để đăng thủ công |
+| 6 (T1) | Dự báo thời tiết Đà Nẵng 3 ngày tới? | `weather(city="Da Nang", days=3)` | v4 | Gọi đúng tool, nhưng lúc đó tool chỉ trả thời tiết hiện tại nên agent tự đặt số liệu ngày 2–3. Lỗi này đã sửa sau đó (xem B5) |
+| 1–3 (T2) | Tìm tin AI hôm nay → Yêu cầu đăng Telegram → `Có, mình xác nhận đăng` | `lookup(...)` → `clarify(response_type="yes_no")` → `send(confirmed=true, text=…)` | `v4+p413725f7051c+tfee9d0e2bf87` | Gửi thành công lên kênh Telegram của nhóm (`"result": {"tool": "send_telegram", "status": "sent"}`) |
 
 Nhận xét: lượt 3 và 5 cho thấy agent không che lỗi tool. Lượt 6 là ví dụ eval chấm đúng (G01 PASS vì chỉ chấm tham số) trong khi tool trả sai dữ liệu, nên vẫn cần kiểm tra bằng chat live.
 
@@ -163,7 +165,7 @@ Chỉ điền nếu nhóm làm bonus (ghi riêng, tối đa 10 điểm). Tool c�
 |---|---|---|---|
 | Small Local Model | xem B7 | Không làm | – |
 | Hơn 3 tool mới (≥ 4) | – | Không làm (nhóm có 1 tool mới) | – |
-| `send` gửi thật lên Telegram sau xác nhận | transcript | Chưa đạt: luồng hỏi lại → xác nhận → `send(confirmed=true)` đúng, nhưng thiếu `TELEGRAM_BOT_TOKEN` nên không có `status: sent` | Không commit token vào repo |
+| `send` gửi thật lên Telegram sau xác nhận | [`starter_v0/transcripts/v4_groq_20261111T112623429223.transcript.json`](../../starter_v0/transcripts/v4_groq_20261111T112623429223.transcript.json) | ĐẠT: Luồng đầy đủ 3 lượt (Lượt 1: `lookup` lấy tin AI hôm nay → Lượt 2: user yêu cầu đăng Telegram, agent gọi `clarify(response_type="yes_no")` hỏi xác nhận → Lượt 3: user xác nhận `"Có, mình xác nhận đăng"`, agent gọi `send(confirmed=true)` và trả về `{"tool": "send_telegram", "status": "sent"}`) | Không commit `TELEGRAM_BOT_TOKEN` và `TELEGRAM_CHAT_ID` vào repo; chỉ gửi khi `confirmed=true` |
 | Test challenge (0 skipped / regression test) | `starter_v0/tests/test_tools_todo.py::test_weather_forecast_days_regression_returns_multiple_days` | Bắt và sửa bug logic: Tool nhận tham số `days > 1` nhưng chỉ gọi `current` mà bỏ quên `daily`, khiến agent phải tự bịa số liệu cho các ngày sau. Đã sửa và có regression test chứng minh. | Đảm bảo tính toán đúng ngày, min/max temp, xác suất mưa và timezone tự động |
 
 Test challenge: Đã tìm và sửa 1 bug logic thực tế trong tool `weather`:

@@ -46,6 +46,7 @@
   - `starter_v0/runs/v2_B_base_groq_20261110T194443318119.json` (`0.90`, `gpt-oss-120b` — bản chính thức trong `version_log.csv`)
   - `starter_v0/runs/v2_B_base_openrouter_20261110T191547076247.json` (`0.95`, `gpt-4o-mini` — bản chạy thử phụ khi gặp rate-limit OpenRouter `:free`, không ghi vào `version_log.csv`)
   - `starter_v0/runs/v3_B_base_groq_20261110T195252634110.json` (`0.95`, `gpt-oss-120b`, trước khi merge `weather`)
+  - `starter_v0/transcripts/v4_groq_20261111T112623429223.transcript.json` (Bonus gửi Telegram thật sau khi xác nhận: `clarify(yes_no)` → user xác nhận → `send(confirmed=true)` → `{"tool": "send_telegram", "status": "sent"}`)
 - **Kiểm tra hợp đồng công cụ (Contract Test):**
   - Chạy `pytest tests/test_tool_contract.py` đạt 100% PASS (60/60) sau khi merge tool `weather` vào `tools.yaml`.
 - **Công cụ AI đã dùng:**
