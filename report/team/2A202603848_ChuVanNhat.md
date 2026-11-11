@@ -25,8 +25,9 @@
    - Viết `starter_v0/tools/weather/TOOL.md` đầy đủ YAML frontmatter (`name: weather`, inputs, outputs, side_effect).
    - Đăng ký hàm `get_weather` vào `TOOL_FUNCTIONS` trong `starter_v0/tools/__init__.py`.
    - Cung cấp đoạn khai báo YAML cho Thắng đưa vào `starter_v0/artifacts/tools.yaml`.
-3. **Viết Unit Tests cho Tool:**
+3. **Viết Unit Tests & Sửa lỗi Regression:**
    - `test_weather_happy_path`: Mock fake HTTP với dữ liệu tọa độ và thời tiết chuẩn, kiểm tra request gửi đi và dữ liệu trả về.
+   - `test_weather_forecast_days_regression_returns_multiple_days` (Regression test): Khắc phục lỗi tool chỉ trả `current` khi `days > 1` khiến agent phải tự bịa số liệu. Bổ sung `daily` forecast vào Open-Meteo API và test trả về đúng 3 ngày với đầy đủ min/max temp, xác suất mưa.
    - `test_weather_bad_input_from_model`: Kiểm tra khi model gửi chuỗi rỗng `city=""`, khoảng trắng, hoặc `None` $\rightarrow$ trả về dict lỗi `ValueError` êm đẹp.
    - `test_weather_failure_returns_error_dict`: Giả lập lỗi mạng `RequestException` và trường hợp không tìm thấy thành phố $\rightarrow$ trả về dict lỗi, không crash chương trình.
 4. **Phối hợp nhóm:**
@@ -42,9 +43,9 @@
   - `starter_v0/artifacts/tools.yaml`
   - `starter_v0/tests/test_tools_todo.py`
 - **Output Pytest:**
-  - `pytest tests/test_tool_contract.py` $\rightarrow$ **60 passed in 0.36s** (100% xanh).
-  - `pytest tests/test_tools_todo.py -k weather` $\rightarrow$ **3 passed** (0 failed).
-  - Toàn bộ suite `pytest` $\rightarrow$ **70 passed, 0 failed**.
+  - `pytest tests/test_tool_contract.py` $\rightarrow$ **60 passed in 0.35s** (100% xanh).
+  - `pytest tests/test_tools_todo.py -k weather` $\rightarrow$ **4 passed** (0 failed).
+  - Toàn bộ suite `pytest` $\rightarrow$ **71 passed, 0 failed**.
 - **Công cụ AI đã dùng:**
   - Antigravity / Gemini hỗ trợ scaffold cấu trúc thư mục, tra cứu API format Open-Meteo, và viết fixture mock offline `fake_http`.
   - Tự kiểm tra kết quả bằng cách chạy lệnh `pytest` thực tế trên môi trường local.

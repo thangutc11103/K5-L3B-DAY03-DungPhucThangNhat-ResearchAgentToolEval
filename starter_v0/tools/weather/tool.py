@@ -67,7 +67,7 @@ def get_weather(city: str = "", days: int = 1) -> dict[str, Any]:
         matched_name = location.get("name", city_str)
         country = location.get("country", "")
 
-        # Bước 2: Gọi Forecast API
+        # Bước 2: Gọi Forecast API với cả current và daily forecast
         forecast_url = "https://api.open-meteo.com/v1/forecast"
         forecast_resp = requests.get(
             forecast_url,
@@ -75,6 +75,8 @@ def get_weather(city: str = "", days: int = 1) -> dict[str, Any]:
                 "latitude": lat,
                 "longitude": lon,
                 "current": "temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m",
+                "daily": "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+                "timezone": "auto",
                 "forecast_days": days_int,
             },
             timeout=TIMEOUT,
@@ -86,6 +88,36 @@ def get_weather(city: str = "", days: int = 1) -> dict[str, Any]:
         code = current.get("weather_code", 0)
         condition = WEATHER_CODES.get(code, "Thời tiết bình thường")
 
+        # Xử lý dự báo hàng ngày (daily forecast)
+        daily_data = forecast_data.get("daily") or {}
+        times = daily_data.get("time") or []
+        codes = daily_data.get("weather_code") or []
+        temp_maxs = daily_data.get("temperature_2m_max") or []
+        temp_mins = daily_data.get("temperature_2m_min") or []
+        precip_probs = daily_data.get("precipitation_probability_max") or []
+
+        forecast_list: list[dict[str, Any]] = []
+        for i in range(len(times)):
+            code_i = codes[i] if i < len(codes) else 0
+            forecast_list.append({
+                "date": times[i],
+                "temp_min_c": temp_mins[i] if i < len(temp_mins) else None,
+                "temp_max_c": temp_maxs[i] if i < len(temp_maxs) else None,
+                "weather_code": code_i,
+                "condition": WEATHER_CODES.get(code_i, "Thời tiết bình thường"),
+                "precipitation_probability_pct": precip_probs[i] if i < len(precip_probs) else 0,
+            })
+
+        summary_parts = [
+            f"Thời tiết hiện tại tại {matched_name}, {country}: {condition}, nhiệt độ {current.get('temperature_2m')}°C, độ ẩm {current.get('relative_humidity_2m')}%, gió {current.get('wind_speed_10m')} km/h."
+        ]
+        if forecast_list:
+            forecast_str = "; ".join(
+                f"{item['date']}: {item['condition']} ({item['temp_min_c']}°C - {item['temp_max_c']}°C, xác suất mưa {item['precipitation_probability_pct']}%)"
+                for item in forecast_list
+            )
+            summary_parts.append(f"Dự báo {len(forecast_list)} ngày tới: {forecast_str}")
+
         return {
             "tool": "weather",
             "city": matched_name,
@@ -96,7 +128,8 @@ def get_weather(city: str = "", days: int = 1) -> dict[str, Any]:
             "wind_speed_kmh": current.get("wind_speed_10m"),
             "weather_code": code,
             "condition": condition,
-            "summary": f"Thời tiết tại {matched_name}, {country}: {condition}, nhiệt độ {current.get('temperature_2m')}°C, độ ẩm {current.get('relative_humidity_2m')}%, gió {current.get('wind_speed_10m')} km/h.",
+            "forecast": forecast_list,
+            "summary": " ".join(summary_parts),
         }
     except Exception as exc:
         return err("weather", exc)

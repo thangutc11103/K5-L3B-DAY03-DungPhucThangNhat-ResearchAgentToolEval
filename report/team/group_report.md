@@ -100,11 +100,11 @@ Lấy từ `starter_v0/transcripts/*.transcript.json`.
 
 | Item | Evidence File | What Worked | Risk / Guardrail |
 |---|---|---|---|
-| Tool mới (`tools/weather/`) | `starter_v0/tools/weather/tool.py`, `TOOL.md` | Tra cứu thời tiết hiện tại và dự báo qua Open-Meteo API (không cần API key), tự động map mã WMO sang tiếng Việt | Bọc toàn bộ trong try/except, trả về dict lỗi `{"tool": "weather", "error": ...}` không raise exception |
-| Unit test tool mới (≥ 3 test/tool) | `starter_v0/tests/test_tools_todo.py`, `pytest` output (0 failed) | 3 unit tests: Happy path (mock HTTP), Bad input (city rỗng, None), Failure path (mạng timeout, không tìm thấy thành phố) | Mock hoàn toàn bằng fixture `fake_http`, kiểm tra bắt đúng lỗi mà không để sập agent |
+| Tool mới (`tools/weather/`) | `starter_v0/tools/weather/tool.py`, `TOOL.md` | Tra cứu thời tiết hiện tại và dự báo 1-7 ngày qua Open-Meteo API (không cần API key), tự động map mã WMO sang tiếng Việt và trả danh sách forecast chi tiết | Bọc toàn bộ trong try/except, trả về dict lỗi `{"tool": "weather", "error": ...}` không raise exception |
+| Unit test tool mới (≥ 3 test/tool) | `starter_v0/tests/test_tools_todo.py`, `pytest` output (0 failed) | 4 unit tests: Happy path, Regression test forecast nhiều ngày (days=3), Bad input (city rỗng, None), Failure path (mạng timeout, không tìm thấy thành phố) | Mock hoàn toàn bằng fixture `fake_http`, kiểm tra bắt đúng lỗi mà không để sập agent |
 | UI (lệnh chạy + link dùng thử) |  |  |  |
 
-Tool unit tests: Đã viết 3 tests cho tool `weather`. Ví dụ lỗi mà unit test bắt được nhưng eval không bắt được: Khi model truyền `city=""` hoặc mạng bị timeout, nếu tool không bọc `try/except` thì sẽ `raise Exception` làm sập toàn bộ Agent; unit test bắt buộc tool phải trả về dictionary lỗi `{"tool": "weather", "error": "ValueError", ...}` giúp Agent tiếp tục hoạt động.
+Tool unit tests: Đã viết 4 tests cho tool `weather` (gồm 1 regression test). Ví dụ lỗi mà unit test bắt được nhưng eval không bắt được: Khi model truyền `city=""` hoặc mạng bị timeout, nếu tool không bọc `try/except` thì sẽ `raise Exception` làm sập toàn bộ Agent; unit test bắt buộc tool phải trả về dictionary lỗi `{"tool": "weather", "error": "ValueError", ...}` giúp Agent tiếp tục hoạt động.
 
 ### B5. Bonus Evidence
 
@@ -115,9 +115,12 @@ Chỉ điền nếu nhóm làm bonus (ghi riêng, tối đa 10 điểm). Tool c�
 | Small Local Model | xem B7 |  |  |
 | Hơn 3 tool mới (≥ 4) |  |  |  |
 | `send` gửi thật lên Telegram sau xác nhận | transcript |  |  |
-| Test challenge (0 skipped / regression test) | `pytest` output |  |  |
+| Test challenge (0 skipped / regression test) | `starter_v0/tests/test_tools_todo.py::test_weather_forecast_days_regression_returns_multiple_days` | Bắt và sửa bug logic: Tool nhận tham số `days > 1` nhưng chỉ gọi `current` mà bỏ quên `daily`, khiến agent phải tự bịa số liệu cho các ngày sau. Đã sửa và có regression test chứng minh. | Đảm bảo tính toán đúng ngày, min/max temp, xác suất mưa và timezone tự động |
 
-Test challenge: số bug tìm được trong tool có sẵn (nếu có), cách sửa, và test regression tương ứng.
+Test challenge: Đã tìm và sửa 1 bug logic thực tế trong tool `weather`:
+- **Hiện tượng:** Khi user yêu cầu "dự báo thời tiết 3 ngày" (`days=3`), tool chỉ lấy thời tiết hiện tại (`current`) từ Open-Meteo mà không truyền tham số `daily`, kết quả trả về thiếu danh sách `forecast` khiến Agent trong live chat phải tự suy đoán/bịa số liệu cho ngày 2 và ngày 3.
+- **Cách sửa:** Bổ sung `daily: weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max` và `timezone: auto` vào request tới Open-Meteo Forecast API; trích xuất danh sách `forecast` gồm từng ngày (nhiệt độ min/max, tình trạng thời tiết, xác suất mưa) và tổng hợp vào `summary`.
+- **Regression test:** Viết test `test_weather_forecast_days_regression_returns_multiple_days` gọi `days=3`, kiểm tra `len(forecast) == 3`, đầy đủ ngày và nhiệt độ min/max, xác nhận bug được khắc phục triệt để.
 
 ### B7. Small Local Model Challenge (bonus)
 

@@ -120,6 +120,13 @@ def test_weather_happy_path(fake_http) -> None:
             "weather_code": 0,
             "wind_speed_10m": 12.0,
         },
+        "daily": {
+            "time": ["2026-11-10"],
+            "weather_code": [0],
+            "temperature_2m_max": [30.0],
+            "temperature_2m_min": [22.0],
+            "precipitation_probability_max": [10],
+        },
     }))
     result = TOOL_FUNCTIONS["weather"](city="Hanoi", days=1)
 
@@ -128,12 +135,48 @@ def test_weather_happy_path(fake_http) -> None:
     assert calls[0]["params"]["name"] == "Hanoi"
     assert "api.open-meteo.com" in calls[1]["url"]
     assert calls[1]["params"]["latitude"] == 21.0285
+    assert calls[1]["params"]["forecast_days"] == 1
+    assert calls[1]["params"]["timezone"] == "auto"
     assert result["city"] == "Hanoi"
     assert result["country"] == "Vietnam"
     assert result["temperature_c"] == 28.5
     assert result["humidity_pct"] == 65
     assert result["condition"] == "Trời quang đãng (Clear sky)"
+    assert len(result["forecast"]) == 1
+    assert result["forecast"][0]["temp_max_c"] == 30.0
     assert "Hanoi, Vietnam" in result["summary"]
+
+
+def test_weather_forecast_days_regression_returns_multiple_days(fake_http) -> None:
+    """Regression test for bug where days > 1 was ignored and only current weather was returned."""
+    calls = fake_http(FakeResponse({
+        "results": [{"name": "Da Nang", "latitude": 16.0544, "longitude": 108.2022, "country": "Vietnam"}],
+        "current": {
+            "temperature_2m": 25.0,
+            "relative_humidity_2m": 80,
+            "weather_code": 2,
+            "wind_speed_10m": 15.0,
+        },
+        "daily": {
+            "time": ["2026-11-11", "2026-11-12", "2026-11-13"],
+            "weather_code": [2, 61, 80],
+            "temperature_2m_max": [27.0, 26.0, 25.5],
+            "temperature_2m_min": [22.0, 21.5, 21.0],
+            "precipitation_probability_max": [20, 80, 75],
+        },
+    }))
+    result = TOOL_FUNCTIONS["weather"](city="Da Nang", days=3)
+
+    assert len(calls) == 2
+    assert calls[1]["params"]["forecast_days"] == 3
+    assert "daily" in calls[1]["params"]
+    assert result["days"] == 3
+    assert len(result["forecast"]) == 3
+    assert result["forecast"][0]["date"] == "2026-11-11"
+    assert result["forecast"][0]["temp_max_c"] == 27.0
+    assert result["forecast"][1]["date"] == "2026-11-12"
+    assert result["forecast"][1]["precipitation_probability_pct"] == 80
+    assert "Dự báo 3 ngày tới" in result["summary"]
 
 
 def test_weather_bad_input_from_model() -> None:
