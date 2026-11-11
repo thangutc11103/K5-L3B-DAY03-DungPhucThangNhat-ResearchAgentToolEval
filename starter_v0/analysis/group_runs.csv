@@ -1,0 +1,11 @@
+run_id,version,artifact_version,suite,case_id,is_multiturn,case_failure_type,observed_mismatch,expected_tool,actual_tool,passed,routing_correct,args_correct,failures
+v4_B_group_groq_20261111T080451202418,v4,v4+p413725f7051c+tfee9d0e2bf87,group,G01_weather_forecast_routing,False,wrong_tool,,weather,weather,True,True,True,
+v4_B_group_groq_20261111T080451202418,v4,v4+p413725f7051c+tfee9d0e2bf87,group,G02_weather_missing_city,False,missing_info,,clarify,clarify,True,True,True,
+v4_B_group_groq_20261111T080451202418,v4,v4+p413725f7051c+tfee9d0e2bf87,group,G03_handle_with_at_sign,False,wrong_arg_value,,timeline,timeline,True,True,True,
+v4_B_group_groq_20261111T080451202418,v4,v4+p413725f7051c+tfee9d0e2bf87,group,G04_out_of_scope_booking,False,out_of_scope,,no_tool,,True,True,True,
+v4_B_group_groq_20261111T080451202418,v4,v4+p413725f7051c+tfee9d0e2bf87,group,G05_papers_sort_and_limit,False,wrong_arg_value,,papers,papers,True,True,True,
+v4_B_group_groq_20261111T080451202418,v4,v4+p413725f7051c+tfee9d0e2bf87,group,G06_send_after_confirmation,True,wrong_boundary,,send,send,True,True,True,
+v4_B_group_groq_20261111T080451202418,v4,v4+p413725f7051c+tfee9d0e2bf87,group,G07_send_cancelled,True,wrong_boundary,,no_tool,,True,True,True,
+v4_B_group_groq_20261111T080451202418,v4,v4+p413725f7051c+tfee9d0e2bf87,group,G08_weather_carryover_city,True,wrong_arg_value,wrong_arg_value,weather,weather,False,True,False,"city: expected 'Tokyo', got 'Hanoi'"
+v4_B_group_groq_20261111T080451202418,v4,v4+p413725f7051c+tfee9d0e2bf87,group,G09_switch_web_to_twitter_top,True,wrong_tool,,social_search,social_search,True,True,True,
+v4_B_group_groq_20261111T080451202418,v4,v4+p413725f7051c+tfee9d0e2bf87,group,G10_no_tool_after_done,True,unnecessary_tool,,no_tool,,True,True,True,
