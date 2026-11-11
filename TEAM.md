@@ -131,8 +131,14 @@ Sao chép mục dưới đây cho từng thành viên.
 
 ### Đóng góp cụ thể
 
--
+- Xây UI Streamlit `starter_v0/app.py`: chat nhiều lượt dùng lại vòng lặp tool của `chat.py`, hiện từng tool call kèm tham số/kết quả, lỗi tool luôn hiện bằng `st.error` (không che), tự lưu transcript kèm `artifact_version`.
+- Thêm provider Groq (`starter_v0/providers/groq_provider.py`, mặc định `openai/gpt-oss-120b`) khi OpenRouter hết quota `:free`; provider này dùng cho v2–v4, run group và chat live.
+- Thêm `streamlit` vào `requirements.txt`, cập nhật `.env.example`, `README.md`, `docs/TOOL-SETUP.md`.
+- Viết Phần A và tổng hợp Phần B của `report/team/group_report.md` (B1–B4, B5a dòng UI, Khó khăn, Reflection) từ run JSON, `version_log.csv`, `analysis/*.csv` và transcript.
+- Duy trì `TEAM.md`.
 
 ### Bằng chứng
 
--
+- Báo cáo cá nhân: `report/team/2A202603894_NguyenMinhPhuc.md`
+- Commit `8dc0251` (`update UI, API provider (groq vs openai-oss-120b)`): `starter_v0/app.py`, `starter_v0/providers/groq_provider.py`, `starter_v0/requirements.txt`
+- `report/team/group_report.md`; lệnh chạy UI và link deploy ở mục A1

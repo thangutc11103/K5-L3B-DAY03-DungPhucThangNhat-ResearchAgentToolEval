@@ -1,0 +1,3 @@
+[client]
+# Hide the "Deploy" button and developer menu items in the top-right toolbar.
+toolbarMode = "minimal"
