@@ -101,14 +101,19 @@ Sao chép mục dưới đây cho từng thành viên.
 
 - Viết 10 case trong `starter_v0/data/eval_group.json` (5 single + 5 multi turn, phủ đủ 6 `failure_type`, 2 case route tới tool `weather`)
 - Kiểm tra case offline bằng bộ chấm của `run_eval.py` (đáp án đúng PASS, đáp án sai FAIL)
-- Xuất `starter_v0/analysis/base_runs.csv` và phân tích 10 case FAIL của v0–v3 vào `starter_v0/analysis/failure_analysis.csv` (loại lỗi + nguyên nhân) cho bảng B2
-- Phát hiện artifact đã commit không khớp hash của run v3 trong `version_log.csv`
+- Xuất `starter_v0/analysis/base_runs.csv`, `group_runs.csv` và phân tích 12 case FAIL của v0–v4 vào `starter_v0/analysis/failure_analysis.csv` (loại lỗi + nguyên nhân) cho bảng B2
+- Phát hiện v2/v3 được chạy trước khi merge tool `weather` (hash lệch); chạy base v4 = v3 + `weather` (19/20) và thêm dòng v4 vào `version_log.csv`
+- Chạy group eval trên v4: 9/10 PASS (G08 fail: lấy nhầm Hà Nội thay vì Tokyo)
+- Chat live 6 lượt trên v4 (research, thiếu thông tin rồi bổ sung, xác nhận trước khi gửi Telegram, tool `weather`); phát hiện tool `weather` không trả dự báo nhiều ngày
+- Cung cấp dữ liệu bảng B2, B3, B4 cho group report
 
 ### Bằng chứng
 
 - Báo cáo cá nhân: `report/team/2A202603896_PhamQuangDung.md`
 - Commit `22eb354` (`feat(eval): add 10 group eval cases`)
-- `starter_v0/analysis/base_runs.csv`, `starter_v0/analysis/failure_analysis.csv`
+- `starter_v0/analysis/base_runs.csv`, `group_runs.csv`, `failure_analysis.csv`
+- `starter_v0/runs/v4_B_base_groq_20261111T080154353341.json`, `starter_v0/runs/v4_B_group_groq_20261111T080451202418.json`
+- `starter_v0/transcripts/v4_groq_20261111T081604991400.transcript.json`
 
 ## NguyenMinhPhuc-2A202603894
 
