@@ -35,7 +35,9 @@ UI ([`starter_v0/app.py`](../../starter_v0/app.py)) dùng lại vòng lặp tool
 
 Deploy bằng Cloudflare Tunnel (`cloudflared tunnel --url http://localhost:8501`).
 
-URL: _(điền link `https://<random>.trycloudflare.com` sau khi chạy tunnel)_
+URL: https://envelope-collaboration-yang-car.trycloudflare.com/
+
+> Link tạm thời qua Cloudflare Tunnel, chỉ hoạt động khi máy chạy UI đang bật (trong buổi demo/showdown). Nếu link không mở được, chạy lại UI theo lệnh ở trên.
 
 ### A2. Tool agent có
 
